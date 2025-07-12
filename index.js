@@ -1451,18 +1451,17 @@ ${content}`);
   }
 });
 
-
 const express = require("express");
 const app = express();
+const port = process.env.PORT || 3000;
 
+// Route cho UptimeRobot kiểm tra
 app.get("/", (req, res) => {
-  res.send("✅ Bot is alive!");
+  res.status(200).send("✅ Bot is alive!");
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ HTTP Server listening on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`✅ HTTP server listening on port ${port}`);
 });
-
 
 client.login(process.env.DISCORD_TOKEN);
