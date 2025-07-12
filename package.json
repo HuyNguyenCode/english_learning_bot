@@ -1,0 +1,23 @@
+{
+  "name": "discord-rss-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.0.1",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.1",
+    "node-cron": "^4.2.1",
+    "node-schedule": "^2.1.1",
+    "openai": "^5.9.0",
+    "rss-parser": "^3.13.0"
+  }
+}
