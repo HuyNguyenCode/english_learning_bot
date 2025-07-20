@@ -29,8 +29,52 @@ function updateUserScore(userId, point) {
   userScores.set(userId, current + point);
 }
 
+// Hàm gửi yêu cầu tới OpenRouter GPT
+async function askEnglishGPT(message) {
+  // Prompt xác định vai trò giáo viên tiếng Anh
+  const basePrompt = `
+You are a highly qualified English teacher with over 10 years of experience. 
+You help students improve grammar, vocabulary, writing, and speaking. 
+You are friendly, professional, and always provide clear explanations with examples. 
+Respond in the style of an English language instructor.
+`;
+  const response = await axios.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      model: "openai/gpt-4", // hoặc "openai/gpt-3.5-turbo", hoặc model khác từ OpenRouter
+      max_tokens: 500, // ✅ GIỚI HẠN TOKEN ĐỂ TRÁNH LỖI
+      messages: [
+        { role: "system", content: basePrompt },
+        { role: "user", content: message },
+      ],
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data.choices[0].message.content.trim();
+}
+
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return; // tránh bot trả lời chính nó
+
+  if (!msg.content.startsWith("/askenglish ")) return;
+  const question = msg.content.replace("/askenglish ", "").trim();
+  if (!question) return msg.reply("❗ Please provide a question to ask.");
+
+  await msg.channel.send("📚 Thinking...");
+
+  try {
+    const reply = await askEnglishGPT(question);
+    msg.reply(reply);
+  } catch (err) {
+    console.error("❌ GPT Error:", err?.response?.data || err.message);
+    msg.reply("⚠️ Sorry, something went wrong while processing your request.");
+  }
 
   // /wordoftheday
   if (msg.content === "/wordoftheday") {
@@ -1359,6 +1403,7 @@ ${data.explanation}`
     }
   }
 
+  // /writeessay [topic]
   if (msg.content.startsWith("/writeessay ")) {
     const topic = msg.content.slice(11).trim();
     if (!topic)
